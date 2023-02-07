@@ -1,6 +1,36 @@
 import './app.css';
+import { useState, useEffect, useCallback } from 'react';
+import Quiz from './components/Quiz';
+import { shuffleArray } from './utils/shuffleAnswers';
+import axios from 'axios';
+
 
 function App() {
+  const [questionNumber, setQuestionNumber] = useState(1);
+  const [data, setData] = useState([])
+  const [Loading, setLoading] = useState(false);
+  
+  const [timeOut, setTimeOut] = useState(false);
+
+
+
+  useEffect(() => {
+
+        axios.get('https://opentdb.com/api.php?amount=15&difficulty=medium&type=multiple')
+            .then(res => {
+                setData(res.data.results.map(item => (
+                    
+                    {
+                        question: item.question,
+                        options: shuffleArray([...item.incorrect_answers, item.correct_answer]),
+                        answer: item.correct_answer
+                    }
+                    )));
+                  })
+                  .catch(err => console.error(err))
+
+    }, []);
+  
 
   const moneyPyramid = 
       [
@@ -23,12 +53,19 @@ function App() {
 
   return (
     <div className="app">
-      <div className="main">mani</div>
+      <div className="main">
+        <div className="top">
+          <div className="timer">30</div>
+        </div>
+        <div className="bottom">
+          <Quiz data={data} setTimeOut={setTimeOut} setQuestionNumber={setQuestionNumber} questionNumber={questionNumber}/>
+        </div>
+      </div>
       <div className="pyramid">
         <ul className="moneyList">
-          {moneyPyramid.map((item) => {
+          {moneyPyramid.map((item, number) => {
             return (
-              <li className="moneyListItem"> 
+              <li className={questionNumber === item.id ? 'moneyListItem active' : 'moneyListItem'} key={number}> 
                 <span className="moneyListItemNumber">{item.id}</span>
                 <span className="moneyListItemAccount">{item.amount}</span>
               </li>
