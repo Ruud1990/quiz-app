@@ -1,78 +1,105 @@
 import './app.css';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import Quiz from './components/Quiz';
-import { shuffleArray } from './utils/shuffleAnswers';
-import axios from 'axios';
+import { fetchQuizQuestions } from './Api';
+import MoneyPiramyd from './components/MoneyPiramyd';
 
 
 function App() {
-  const [questionNumber, setQuestionNumber] = useState(1);
-  const [data, setData] = useState([])
-  const [Loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [questions, setQuestions] = useState([]);
+  const [number, setNumber] = useState(0);
+  const [userAnswers, setUserAnswers] = useState([]);
+  const [score, setScore] = useState(0);
+  const [gameOver, setGameOver] = useState(true);
+  const [goodAnswer, setGoodAnswer] = useState('answer');
+
+
+       const startGame = async () => {
+
+    setLoading(true);
+    setGameOver(false);
+    const newQuestions = await fetchQuizQuestions();
+    setQuestions(newQuestions);
+    console.log(newQuestions);
+    setScore(0);
+    setUserAnswers([]);
+    setNumber(0);
+    setGoodAnswer('answer');
+    setLoading(false);
+  };
+
   
-  const [timeOut, setTimeOut] = useState(false);
+  const checkAnswer = (e) => {
+    if (!gameOver) {
+      // User's answer
+      const answer = e.currentTarget.value;
+      // Check answer against correct answer
+      const correct = questions[number].correct_answer === answer;
+      // Add score if answer is correct
+      if (correct) setScore((prev) => prev + 1);
+      // Save the answer in the array for user answers
+      const answerObject = {
+        question: questions[number].question,
+        answer,
+        correct,
+        correctAnswer: questions[number].correct_answer,
+      };
+      setUserAnswers((prev) => [...prev, answerObject]);
+      console.log(answerObject);
+      console.log(correct);
+    }
+  };
 
 
-
-  useEffect(() => {
-
-        axios.get('https://opentdb.com/api.php?amount=15&difficulty=medium&type=multiple')
-            .then(res => {
-                setData(res.data.results.map(item => (
-                    
-                    {
-                        question: item.question,
-                        options: shuffleArray([...item.incorrect_answers, item.correct_answer]),
-                        answer: item.correct_answer
-                    }
-                    )));
-                  })
-                  .catch(err => console.error(err))
-
-    }, []);
   
 
-  const moneyPyramid = 
-      [
-        { id: 1, amount: "$ 100" },
-        { id: 2, amount: "$ 200" },
-        { id: 3, amount: "$ 300" },
-        { id: 4, amount: "$ 500" },
-        { id: 5, amount: "$ 1.000" },
-        { id: 6, amount: "$ 2.000" },
-        { id: 7, amount: "$ 4.000" },
-        { id: 8, amount: "$ 8.000" },
-        { id: 9, amount: "$ 16.000" },
-        { id: 10, amount: "$ 32.000" },
-        { id: 11, amount: "$ 64.000" },
-        { id: 12, amount: "$ 125.000" },
-        { id: 13, amount: "$ 250.000" },
-        { id: 14, amount: "$ 500.000" },
-        { id: 15, amount: "$ 1.000.000" },
-      ].reverse();
+  const nextQuestion = () => {
+    // Move on to the next question if not the last question
+    const nextQ = number + 1;
+
+    if (nextQ === 15) {
+      setGameOver(true);
+    } else {
+      setNumber(nextQ);
+    }
+  };
+
+  let questionNumber = number + 1;
+
 
   return (
     <div className="app">
       <div className="main">
         <div className="top">
-          <div className="timer">30</div>
+        <h1>millionaires</h1>
         </div>
+         {gameOver ? (
+          <button className='start' onClick={startGame}>
+            Start Game
+          </button>
+        ) : null}
+        {loading ? <p>Loading Questions...</p> : null}
         <div className="bottom">
-          <Quiz data={data} setTimeOut={setTimeOut} setQuestionNumber={setQuestionNumber} questionNumber={questionNumber}/>
+          <div className="timer">30</div>
+        {!gameOver && !loading && userAnswers.length === number + 1 ? (
+          <button className='next' onClick={nextQuestion}>
+            Next Question
+          </button>
+        ) : null}
+           {!loading && !gameOver && (
+          <Quiz
+            questionNr={number + 1}
+            question={questions[number].question}
+            answers={questions[number].answers}
+            userAnswer={userAnswers ? userAnswers[number] : undefined}
+            callback={checkAnswer}
+            goodAnswer={goodAnswer}
+          />
+        )}
         </div>
       </div>
-      <div className="pyramid">
-        <ul className="moneyList">
-          {moneyPyramid.map((item, number) => {
-            return (
-              <li className={questionNumber === item.id ? 'moneyListItem active' : 'moneyListItem'} key={number}> 
-                <span className="moneyListItemNumber">{item.id}</span>
-                <span className="moneyListItemAccount">{item.amount}</span>
-              </li>
-            )
-          })}
-        </ul>
-      </div>
+      <MoneyPiramyd questionNumber={questionNumber}/>
     </div>
   );
 }
