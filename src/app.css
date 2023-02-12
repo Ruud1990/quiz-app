@@ -215,6 +215,8 @@ h1 {
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0), #020229), var(--clr-grey-1);
 }
 
+
+
 .moneyList {
     list-style: none;
     width: 100%;
@@ -244,4 +246,30 @@ h1 {
 
 .number {
     font-size: 1.4rem;
+}
+
+@media only screen and (max-width: 900px) {
+  .moneyListItemNumbe, .moneyListItemAccount, .question, .number, .answerText {
+    font-size: 1rem;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    h1 {
+        font-size: 1.5rem;
+    }
+    .moneyListItemNumber, .moneyListItemAccount, .question, .number, .answerText {
+        font-size: 0.8rem;
+    }
+    .correctAnswer1, .correctAnswer2 {
+        font-size: 1rem;
+    }
+
+    .main {
+        width: 65%;
+    }
+    .pyramid {
+        width: 35%;
+    }
+
 }
