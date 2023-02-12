@@ -1,25 +1,31 @@
-import React, {useEffect, useState} from 'react';
-import {shuffleArray} from '../utils/shuffleAnswers'
+import React from 'react';
+import Answer from './Answer';
 
-const Quiz = ({data, questionNumber, setQuestionNumber, setTimeOut}) => {
-
-    const [question, setQuestion] = useState(null);
-
-    
-    useEffect(() => {
-        console.log('Quiz');
-        setQuestion(data[questionNumber - 1]);
-    }, [data, questionNumber]);
+const Quiz = ({question,
+  answers,
+  callback,
+  number,
+  questions,
+  className,
+  userAnswer,
+  questionNr,}) => {
   return (
     <div className='quiz'>
-        <div className='question'>{question?.question}</div>
-        <div className='answers'>
-        {question?.options.map((a, index) => (
-
-            <div className='answer' key={index}>{a}
-            </div>
-        ))}
-        </div>
+      <div className='number'>
+      Question: {questionNr}
+    </div>
+       <div className='question' dangerouslySetInnerHTML={{ __html: question }}></div>
+     <div>
+     <Answer 
+      answers={answers}
+      callback={callback}
+      userAnswer={userAnswer}
+      number={number}
+      questions={questions}
+      className={className}
+     />
+     {userAnswer ? <p className='correctAnswer1'>Correct Answer: <span className='correctAnswer2'>{questions[number].correct_answer}</span></p> : null}
+    </div>
     </div>
   )
 }

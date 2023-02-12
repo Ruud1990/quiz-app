@@ -47,7 +47,6 @@
 .app {
     height: 100vh;
     display: flex;
-    background-color: var(--clr-primary-1);
     color: var(--clr-white);
 }
 
@@ -55,14 +54,43 @@
     display: flex;
     width: 75%;
     flex-direction: column;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0), #020229), url('../src/assets/bg.jpg') center;
+    background-size: cover;
+
+}
+
+.loading {
+    text-align: center;
 }
 
 .top {
     position: relative;
-    height: 50%;
+    height: 40%;
 }
+
+h1 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-transform: uppercase;
+    font-size: 3rem;
+}
+
+.start {
+    width: 40%;
+    margin: 10px auto;
+    background-color: var(--clr-grey-1);
+    color: var(--clr-white);
+    font-size: 2rem;
+    border: 1px solid var(--clr-white);
+    padding: 10px;
+    border-radius: 15px;
+}
+
 .bottom {
     height: 50%;
+    
 }
 
 .quiz {
@@ -70,7 +98,20 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-around;
+    justify-content: center;
+    gap: 20px;
+}
+
+.nextQuestion {
+    margin-left: 15px;
+    text-align: center;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    background-color: var(--clr-black);
+    border: 2px solid var(--clr-white);
+    color: var(--clr-white);
+
 }
 
 .question {
@@ -100,7 +141,37 @@
     margin: 0 10px 10px 10px;
 }
 
-.answer:hover, .answer.active {
+.correctAnswer1 {
+    text-align: center;
+    font-size: 2rem;
+}
+.correctAnswer2 {
+    animation: correctAnswer 3s ease forwards;
+}
+
+@keyframes correctAnswer {
+  0%, 
+  62% {
+  color: transparent;
+}
+
+  100% {
+    color: var(--clr-green-dark);
+  }
+}
+
+
+.answerText {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    background-color: var(--clr-black);
+    border: none;
+    color: var(--clr-white);
+    font-size: 1.2rem;
+}
+
+.answer:hover, .answer.active, .answerText.active, .answerText.hover {
     background-color: var(--clr-primary-2);
 }
 
@@ -120,10 +191,10 @@
     }
 }
 .answer.wrong {
-    animation: correct 3s ease forwards;
+    animation: wrong 3s ease forwards;
 }
 
-@keyframes correct {
+@keyframes wrong {
     0%,22%, 42%{
         background-color: var(--clr-primary-2)
     }
@@ -135,26 +206,13 @@
     }
 }
 
-.timer {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    border: 5px solid var(--clr-white);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-    font-weight: 700;
-    position: absolute;
-    bottom: 10px;
-    left: 80px;
-}
 
 .pyramid {
     display: flex;
     width: 25%;
     align-items: center;
     justify-content: center;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0), #020229), var(--clr-grey-1);
 }
 
 .moneyList {
@@ -182,4 +240,8 @@
 .moneyListItemAccount {
     font-size: 1.6rem;
     font-weight: 500;
+}
+
+.number {
+    font-size: 1.4rem;
 }

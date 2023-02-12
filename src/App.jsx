@@ -1,5 +1,5 @@
 import './app.css';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Quiz from './components/Quiz';
 import { fetchQuizQuestions } from './Api';
 import MoneyPiramyd from './components/MoneyPiramyd';
@@ -10,23 +10,21 @@ function App() {
   const [questions, setQuestions] = useState([]);
   const [number, setNumber] = useState(0);
   const [userAnswers, setUserAnswers] = useState([]);
-  const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(true);
-  const [goodAnswer, setGoodAnswer] = useState('answer');
+  const [className, setClassName] = useState('answer');
 
 
-       const startGame = async () => {
+  const startGame = async () => {
 
     setLoading(true);
     setGameOver(false);
     const newQuestions = await fetchQuizQuestions();
     setQuestions(newQuestions);
     console.log(newQuestions);
-    setScore(0);
     setUserAnswers([]);
     setNumber(0);
-    setGoodAnswer('answer');
     setLoading(false);
+    setClassName('answer');
   };
 
   
@@ -36,8 +34,6 @@ function App() {
       const answer = e.currentTarget.value;
       // Check answer against correct answer
       const correct = questions[number].correct_answer === answer;
-      // Add score if answer is correct
-      if (correct) setScore((prev) => prev + 1);
       // Save the answer in the array for user answers
       const answerObject = {
         question: questions[number].question,
@@ -46,6 +42,16 @@ function App() {
         correctAnswer: questions[number].correct_answer,
       };
       setUserAnswers((prev) => [...prev, answerObject]);
+      if (questions[number].correct_answer === answer) {
+        setClassName('answer correct')
+      } if (questions[number].correct_answer !== answer) {
+        setClassName('answer wrong')
+        setTimeout(() => {
+          setGameOver(true);
+          
+        }, 5000);
+      }
+      console.log(className);
       console.log(answerObject);
       console.log(correct);
     }
@@ -57,7 +63,7 @@ function App() {
   const nextQuestion = () => {
     // Move on to the next question if not the last question
     const nextQ = number + 1;
-
+    setClassName('answer');
     if (nextQ === 15) {
       setGameOver(true);
     } else {
@@ -79,11 +85,10 @@ function App() {
             Start Game
           </button>
         ) : null}
-        {loading ? <p>Loading Questions...</p> : null}
+        {loading ? <p className='loading'>Loading Questions...</p> : null}
         <div className="bottom">
-          <div className="timer">30</div>
         {!gameOver && !loading && userAnswers.length === number + 1 ? (
-          <button className='next' onClick={nextQuestion}>
+          <button className='nextQuestion' onClick={nextQuestion}>
             Next Question
           </button>
         ) : null}
@@ -94,7 +99,9 @@ function App() {
             answers={questions[number].answers}
             userAnswer={userAnswers ? userAnswers[number] : undefined}
             callback={checkAnswer}
-            goodAnswer={goodAnswer}
+            number={number}
+            questions={questions}
+            className={className}
           />
         )}
         </div>
